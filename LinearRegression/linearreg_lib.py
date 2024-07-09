@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.datasets import make_blobs
+from sklearn.datasets import make_regression
+from sklearn.model_selection import train_test_split
 import random
 
 

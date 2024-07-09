@@ -1,46 +1,52 @@
 from linearreg_lib import *
 from linearreg_plot import *
-from linearreg_plot import LinearRegressionPlot
 
 class LinearRegression:
 
-    def __init__(self, train, lr=0.001):
-        self.train = train
-        self.num_sample, self.num_feat = train.shape
-        self.X_train = train[:,0]
-        self.y_train = train[:,1]
-        self.alpha = lr
+    def __init__(self, lr=0.001, n_iter=100):
+        self.lr = lr
+        self.n_iter = n_iter
+        self.weight = None
+        self.bias = None
 
-    def random_line(self):
-        self.a = np.random.randn()
-        self.b = np.random.randn()
+    def fit(self, X, y  ):
+        n_samples, n_features = X.shape
+        self.weight = np.zeros(n_features)
+        self.bias = 0
 
-    def pred_y(self):
-        return self.a * self.X_train + self.b
+        for _ in range(self.n_iter):
+            y_pred = np.dot(X, self.weight) + self.bias
 
-    def distance(self):
-        return np.abs(self.a * self.X_train - self.y_train + self.b) / np.sqrt(self.a**2 + 1)
+            dw = (1/n_samples) * np.dot(X.T, (y_pred - y))
+            db = (1/n_samples) * np.sum(y_pred - y)
 
-    def training(self):
-        self.random_line()
-        
-        for i in range(3):
-            self.dw = (1/self.num_sample)*2*self.X_train*(self.pred_y() - self.y_train)
-            self.db = (1/self.num_sample)*2*(self.pred_y() - self.y_train)
+            self.weight -= self.lr * dw
+            self.bias -= self.lr * db
 
-            self.a = self.a - self.alpha*self.dw
-            self.b = self.b - self.alpha*self.db
-
-            self.loss = (1/self.num_sample)*np.sum(self.y_train - (self.a*self.X_train + self.b))**2
+    def predict(self, X):
+        y_pred = np.dot(X, self.weight) + self.bias
+        return y_pred
+    
+    def loss(self, y_true, y_pred):
+        return np.mean((y_true - y_pred)**2)
 
 if __name__ == "__main__":
 
-    train, _ = make_blobs(n_samples=10, n_features=2)
+    X,y = make_regression(n_samples=100,n_features=1,noise=20,random_state=4)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
-    linear = LinearRegression(train)
+    linear = LinearRegression()
+    linear.fit(X_train, y_train)
+    pred = linear.predict(X_test)
 
-    linear.training()
+    print(linear.loss(y_test, pred))
 
-    # linear_plot = LinearRegressionPlot(linear)
-    # linear_plot.plot()
+    linear_plot = LinearRegressionPlot(linear)
+    linear_plot.plot(X, X_train, y_train, X_test, y_test)
+
+
+
+
+
+
     

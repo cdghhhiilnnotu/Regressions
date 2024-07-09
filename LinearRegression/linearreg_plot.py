@@ -1,25 +1,17 @@
-from linearreg import LinearRegression
 from linearreg_lib import *
 
 class LinearRegressionPlot:
-    def __init__(self, linear: LinearRegression):
+    def __init__(self, linear):
         self.linear = linear
 
-    def plot(self):
-        a, b = self.linear.a, self.linear.b
-        # Generate x-values
-        x_values = np.linspace(-10, 10, 100)
-
-        # Calculate y-values
-        y_values = a[0] * x_values + b[0]
-
-        # Plot the line
-        plt.scatter(self.linear.X_train, self.linear.y_train, color='blue', marker='o', label='Data points')
-        plt.plot(x_values, y_values, label=f"y = {a:.2f}x + {b:.2f}")
-        plt.xlabel("x")
-        plt.ylabel("y")
-        plt.title("Line: y = ax + b")
-        plt.grid(True)
+    def plot(self, X, X_train, y_train, X_test, y_test):
+        y_line = self.linear.predict(X)
+        cmap = plt.get_cmap('viridis')
+        plt.figure(figsize=(8,6))
+        plt.scatter(X_train, y_train, color=cmap(0.9), s=10)
+        plt.scatter(X_test, y_test, color=cmap(0.5), s=10)
+        plt.plot(X, y_line, color='black', linewidth=2, label='Predictions')
+        plt.show()
         plt.legend()
         plt.show()
 
